@@ -6,36 +6,44 @@
           <img src="../images/smallClaimLogo.png" height="100px" width="400px">
         </div>
 
-      </Header><br>
+      </Header>
+      <br>
       <Layout>
         <div id="content">
-          <form id="box">
-            <formitem id="account" style="">
-              <input v-model="userInfo.account">
-              <span slot="prerend">
-                <icon size="16px" type="person"></icon>
+          <Form id="box" >
+            <Formitem id="account" style="" prop="account" >
+              <Input :style="{width:'100px',marginLeft:'10px'}"  v-model="userInfo.account" placeholder="请输入账号" @keyup.enter.native="login">
+                <span slot="prepend">
+                <Icon :size="20" type="person"></Icon>
               </span>
-            </formitem><br>
-            <formitem>
-              <input v-model="userInfo.passWd">
-              <span slot="prerend">
-                <icon size="16px" type="locked"></icon>
+              </Input>
+            </Formitem>
+
+            <Formitem prop="passWd" >
+              <Input v-model="userInfo.passWd" placeholder="请输入密码" @keyup.enter.native="login"><br>
+                <span slot="prepend">
+                <Icon :size="14" type="locked"></Icon>
               </span>
-            </formitem><br>
-            <formitem id="role" style="margin-top: 20px">
+              </Input>
+            </Formitem>
+
+            <Formitem id="role" style="margin-top: 20px">
               <label>角色：</label>
-              <select v-model="userInfo.role" >
+              <Select v-model="userInfo.role">
                 <option value="" seleted disabled>请选择</option>
                 <option v-for="item in roleList" :value="item.value" :key="item.value">{{item.label}}</option>
-              </select>
-            </formitem><br>
-            <formitem id="test">
-              <input placeholder="请输入验证码">
+              </Select>
+            </Formitem>
+            <br>
+            <Formitem id="test">
+              <Input placeholder="请输入验证码" v-model="userInfo.verifyCode"></Input>
               <div id="changePic" @click="changePic">
-                <identify :identifyCode="userInfo.identifyCode"></identify>
+                <identify :identifyCode="identifyCode"></identify>
               </div>
-            </formitem>
-            <Button id="loginB" @click="login" type="primary" shape="circle">登录</Button><br>
+            </Formitem>
+            <br>
+            <Button id="loginB" @click="login" type="primary" shape="circle">登录</Button>
+            <br>
             <div id="snap">
               <p>请使用chrome浏览器<a href="http://down10.zol.com.cn/ceshi/ChromeSetup.exe">下载</a></p>
               <div id="register">
@@ -51,7 +59,7 @@
                 </modal>
               </div>
             </div>
-          </form>
+          </Form>
           <div id="banner">
             <Carousel autoplay v-model="value2" loop>
               <CarouselItem>
@@ -66,12 +74,11 @@
             </Carousel>
 
           </div>
-        </div><br>
+        </div>
+        <br>
       </Layout>
       <layout>
         <div id="footer">
-          <p id="siter">厦门市湖里区人民法院</p>
-
           <div id="outsiteCont">
             <a href="http://218.5.2.1:18080/">法务云盘</a>
             <a href="http://courtapp.chinacourt.org/">最高人民法院</a>
@@ -79,6 +86,7 @@
             <a href="https://www.xmcourt.gov.cn/">厦门市中级人民法院</a>
             <a href="http://tingshen.court.gov.cn/">中国庭审公开网</a>
           </div>
+          <p id="siter">厦门市湖里区人民法院</p>
           <p id="suppoter">技术支持:厦门纵横集团</p>
         </div>
 
@@ -89,72 +97,72 @@
 </template>
 
 <script>
-  import Identify from "./identify";
-  import home from "./home";
-    export default {
-        name: "login",
-      components: {Identify},
-      data(){
-          return{
-            userInfo:{
-              account:'',
-              passWd:'',
-              role:'',
-              identifyCode:'',
-            },
-
-            currentIndex:0,
-
-            timer:null,
-            bannerList:[
-              "../images/banner1.jpg",
-              "../images/banner2.jpg",
-              "../images/banner3.jpg",
-            ],
-            roleList:[
-              {
-                label:'当事人',
-                value:'当事人'
-              },
-              {
-                label:'代理人',
-                value:'代理人'
-              }
-            ]
-          }
-      },
-      computed: {
-          //上一张
-          prePage(){
-            if (this.currentIndex===0){
-              return this.bannerList.length-1
-            }
-            else {
-              return this.currentIndex-1
-            }
+  import Identify from "./identify";//Identify为验证码插件
+  import home from "./home";        //home是登录成功的跳转页面
+  export default {
+    name: "login",
+    components: {Identify},
+    data() {
+      return {
+        //登录用户信息
+        userInfo: {
+          account: '',
+          passWd: '',
+          role: '',
+          verifyCode: '',
         },
-        //下一张
-        nextPage(){
-          if (this.currentIndex===this.bannerList.length-1){
-            return 0
+        //输入的验证码
+        identifyCodes: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        identifyCode:'',
+        bannerList: [
+          "../images/banner1.jpg",
+          "../images/banner2.jpg",
+          "../images/banner3.jpg",
+        ],
+        roleList: [
+          {
+            label: '当事人',
+            value: '当事人'
+          },
+          {
+            label: '代理人',
+            value: '代理人'
           }
-          else {
-            return this.currentIndex+1
-          }
-        }
-      },
-      methods:{
-          login(){},
-        changePic(){},
-        click(){},
-        //点击圆点切换图片
-        gotoPage(index){
-            this.currentIndex=index
-        },
+        ]
       }
+    },
+    mounted() {
+      this.identifyCode=''
+      this.makeCode(this.identifyCode,4)
+    },
+    computed: {
+    },
+    methods: {
+      //登录验证及成功跳转
+      login() {
+      },
+      //生成随机数
+      randomNum(){
+        return Math.floor(Math.random()*33)
+      },
+      //生成验证码
+      makeCode(o,l){
+        for (let i=0;i<l;i++){
+          this.identifyCode+=this.identifyCodes[this.randomNum()]
+        }
+        console.log(this.identifyCode)
+      },
+      //更新验证码
+      changePic() {
+        this.identifyCode=''
+        this.makeCode(this.identifyCode,4)
+      },
+      click() {
+      },
     }
+  }
 </script>
 
 <style scoped>
-@import "login.less";
+  @import "login.less";
 </style>
